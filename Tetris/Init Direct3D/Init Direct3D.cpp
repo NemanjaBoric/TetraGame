@@ -133,10 +133,13 @@ void BoxApp::OnResize()
 
 void BoxApp::UpdateScene(float dt)
 {
+    static float deltax = 0.001;
+
+
 	// Convert Spherical to Cartesian coordinates.
 	float x = mRadius*sinf(mPhi)*cosf(mTheta);
-	 float z = mRadius*sinf(mPhi)*sinf(mTheta);
-	 float y = mRadius*cosf(mPhi);
+	float z = mRadius*sinf(mPhi)*sinf(mTheta);
+	float y = mRadius*cosf(mPhi);
 
 	// Build the view matrix.
 	XMVECTOR pos    =  XMVectorSet(0.0f, 0.0f, -6.0f, 1.0f);
@@ -145,6 +148,26 @@ void BoxApp::UpdateScene(float dt)
 
 	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
 	XMStoreFloat4x4(&mView, V);
+
+    
+    // Move the block
+    float var = blocks[0]->GetInstance(0)->position.x;
+    if(blocks[0]->GetInstance(0)->position.x > 1.0f)
+    {
+        blocks[0]->GetInstance(0)->position.x = 0.98f;
+        deltax = -0.001f;
+    }
+    else if(blocks[0]->GetInstance(0)->position.x < -1.0f)
+    {
+        blocks[0]->GetInstance(0)->position.x = -0.98f;
+        deltax = 0.001f;
+    }
+
+    blocks[0]->GetInstance(0)->position.x += deltax;
+
+    blocks[0]->ApplyTransform();
+
+
 }
 
 void BoxApp::DrawScene()

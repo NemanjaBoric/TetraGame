@@ -24,25 +24,10 @@ void Block::AddInstance(D3DXVECTOR3 pos)
     ins.position = pos;
     instances.push_back(ins);
 
-    InstanceType* tmp = new InstanceType[instances.size()];
-
-    std::vector<InstanceType>::iterator i;
-    int j;
-
-    for(i = instances.begin(), j = 0; i != instances.end(); i++, j++)
-    {
-        *(tmp + j) = *i;
-    }
-
-
-    D3D11_MAPPED_SUBRESOURCE inst;
-    mCntx->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &inst);
-    memcpy(inst.pData, tmp, sizeof(InstanceType) * instances.size());
-    mCntx->Unmap(m_instanceBuffer, 0);
-
-
-    delete [] tmp;
+    ApplyTransform();
 }
+
+
 
 Block::Block(ID3D11Device* d3dDevice, ID3D11DeviceContext* cntx, XMFLOAT3 a, XMFLOAT3 b, XMFLOAT3 c, XMFLOAT3 d)
 {
@@ -72,7 +57,24 @@ Block::Block(ID3D11Device* d3dDevice, ID3D11DeviceContext* cntx, XMFLOAT3 a, XMF
 
 void Block::ApplyTransform()
 {
-   
+   InstanceType* tmp = new InstanceType[instances.size()];
+
+    std::vector<InstanceType>::iterator i;
+    int j;
+
+    for(i = instances.begin(), j = 0; i != instances.end(); i++, j++)
+    {
+        *(tmp + j) = *i;
+    }
+
+
+    D3D11_MAPPED_SUBRESOURCE inst;
+    mCntx->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &inst);
+    memcpy(inst.pData, tmp, sizeof(InstanceType) * instances.size());
+    mCntx->Unmap(m_instanceBuffer, 0);
+
+
+    delete [] tmp;
 }
 
 

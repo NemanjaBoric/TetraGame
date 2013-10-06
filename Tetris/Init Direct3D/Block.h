@@ -34,6 +34,7 @@ public:
     void AddToBuffer(Vertex *vertices);
     
     void AddInstance(D3DXVECTOR3 pos);
+    inline static InstanceType* GetInstance(int index){ return &(instances[index]); }
     inline static int InstanceCount(){ return instances.size(); }
     void ApplyTransform();
     Block(ID3D11Device* d3dDevice, ID3D11DeviceContext* cntx, XMFLOAT3 a, XMFLOAT3 b, XMFLOAT3 c, XMFLOAT3 d);
