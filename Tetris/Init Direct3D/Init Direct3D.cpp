@@ -12,12 +12,11 @@
 #include "d3dApp.h"
 #include "d3dx11Effect.h"
 #include "MathHelper.h"
+#include "Vertex.h"
+#include "Helper.h"
+#include <vector>
+#include "Block.h"
 
-struct Vertex
-{
-	XMFLOAT3 Pos;
-	XMFLOAT4 Color;
-};
 
 class BoxApp : public D3DApp
 {
@@ -40,9 +39,6 @@ private:
 	void BuildVertexLayout();
 
 private:
-	ID3D11Buffer* mBoxVB;
-	ID3D11Buffer* mBoxIB;
-
 	ID3DX11Effect* mFX;
 	ID3DX11EffectTechnique* mTech;
 	ID3DX11EffectMatrixVariable* mfxWorldViewProj;
@@ -58,6 +54,8 @@ private:
 	float mRadius;
 
 	POINT mLastMousePos;
+
+    std::vector<Block*> blocks;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -78,7 +76,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
  
 
 BoxApp::BoxApp(HINSTANCE hInstance)
-: D3DApp(hInstance), mBoxVB(0), mBoxIB(0), mFX(0), mTech(0),
+: D3DApp(hInstance), mFX(0), mTech(0),
   mfxWorldViewProj(0), mInputLayout(0), 
   mTheta(1.5f*3.14f), mPhi(0.25f*3.14f), mRadius(5.0f)
 {
@@ -91,12 +89,12 @@ BoxApp::BoxApp(HINSTANCE hInstance)
 	XMStoreFloat4x4(&mWorld, I);
 	XMStoreFloat4x4(&mView, I);
 	XMStoreFloat4x4(&mProj, I);
+
 }
 
 BoxApp::~BoxApp()
 {
-	ReleaseCOM(mBoxVB);
-	ReleaseCOM(mBoxIB);
+
 	ReleaseCOM(mFX);
 	ReleaseCOM(mInputLayout);
 }
@@ -109,6 +107,24 @@ bool BoxApp::Init()
 	BuildGeometryBuffers();
 	BuildFX();
 	BuildVertexLayout();
+ 
+    blocks.push_back(new Block(md3dDevice, md3dImmediateContext,
+                                XMFLOAT3(-0.0f, -0.0f, -1.0f),
+                                XMFLOAT3(-0.0f, +0.5f, -1.0f),
+                                XMFLOAT3(+0.5f, +0.5f, -1.0f),
+                                XMFLOAT3(+0.5f, -0.0f, -1.0f)));
+
+    blocks.push_back(new Block(md3dDevice, md3dImmediateContext,
+                                XMFLOAT3(+1.0f, +1.0f, -1.0f),
+                                XMFLOAT3(+1.0f, +1.5f, -1.0f),
+                                XMFLOAT3(+1.5f, +1.5f, -1.0f),
+                                XMFLOAT3(+1.5f, +1.0f, -1.0f)));
+
+    blocks.push_back(new Block(md3dDevice, md3dImmediateContext,
+                                XMFLOAT3(-1.0f, -1.0f, -1.0f),
+                                XMFLOAT3(-1.0f, -0.5f, -1.0f),
+                                XMFLOAT3(-0.5f, -0.5f, -1.0f),
+                                XMFLOAT3(-0.5f, -1.0f, -1.0f)));
 
 	return true;
 }
@@ -146,16 +162,17 @@ void BoxApp::DrawScene()
 	md3dImmediateContext->IASetInputLayout(mInputLayout);
     md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	UINT stride = sizeof(Vertex);
+    UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    md3dImmediateContext->IASetVertexBuffers(0, 1, &mBoxVB, &stride, &offset);
-	md3dImmediateContext->IASetIndexBuffer(mBoxIB, DXGI_FORMAT_R32_UINT, 0);
+    blocks[0]->setBuffers(&stride, &offset);
 
 	// Set constants
 	XMMATRIX world = XMLoadFloat4x4(&mWorld);
 	XMMATRIX view  = XMLoadFloat4x4(&mView);
 	XMMATRIX proj  = XMLoadFloat4x4(&mProj);
 	XMMATRIX worldViewProj = world*view*proj;
+
+
 
 	mfxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&worldViewProj));
 
@@ -166,7 +183,7 @@ void BoxApp::DrawScene()
         mTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
         
 		// 36 indices for the box.
-		md3dImmediateContext->DrawIndexed(6, 0, 0);
+		md3dImmediateContext->DrawIndexed(6 * blocks.size(), 0, 0);
     }
 
 	HR(mSwapChain->Present(0, 0));
@@ -220,48 +237,7 @@ void BoxApp::OnMouseMove(WPARAM btnState, int x, int y)
 void BoxApp::BuildGeometryBuffers()
 {
 	// Create vertex buffer
-    Vertex vertices[] =
-    {
-		/*{ XMFLOAT3(0.0f, 0.0f, 0.0f), (const float*)&Colors::White   },
-		{ XMFLOAT3(0.0f, -0.5f, 0.0f), (const float*)&Colors::Red   },
-		{ XMFLOAT3(0.5f, 0.0f, 0.0f), (const float*)&Colors::Blue   },
-		{ XMFLOAT3(0.5f, -0.5f, 0.0f), (const float*)&Colors::Green   },*/
-        { XMFLOAT3(-0.0f, -0.0f, -1.0f), (const float*)&Colors::White   },
-		{ XMFLOAT3(-0.0f, +0.5f, -1.0f), (const float*)&Colors::Black   },
-		{ XMFLOAT3(+0.5f, +0.5f, -1.0f), (const float*)&Colors::Red     },
-		{ XMFLOAT3(+0.5f, -0.0f, -1.0f), (const float*)&Colors::Green   },
-    };
-
-    D3D11_BUFFER_DESC vbd;
-    vbd.Usage = D3D11_USAGE_IMMUTABLE;
-    vbd.ByteWidth = sizeof(Vertex) * 8;
-    vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vbd.CPUAccessFlags = 0;
-    vbd.MiscFlags = 0;
-	vbd.StructureByteStride = 0;
-    D3D11_SUBRESOURCE_DATA vinitData;
-    vinitData.pSysMem = vertices;
-    HR(md3dDevice->CreateBuffer(&vbd, &vinitData, &mBoxVB));
-
-
-	// Create the index buffer
-
-	UINT indices[] = {
-		// front face
-		0, 1, 2,
-        0, 2, 3
-	};
-
-	D3D11_BUFFER_DESC ibd;
-    ibd.Usage = D3D11_USAGE_IMMUTABLE;
-    ibd.ByteWidth = sizeof(UINT) *6;
-    ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    ibd.CPUAccessFlags = 0;
-    ibd.MiscFlags = 0;
-	ibd.StructureByteStride = 0;
-    D3D11_SUBRESOURCE_DATA iinitData;
-    iinitData.pSysMem = indices;
-    HR(md3dDevice->CreateBuffer(&ibd, &iinitData, &mBoxIB));
+   
 }
  
 void BoxApp::BuildFX()
@@ -308,6 +284,8 @@ void BoxApp::BuildVertexLayout()
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
+
+
 
 	// Create the input layout
     D3DX11_PASS_DESC passDesc;
