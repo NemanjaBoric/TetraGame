@@ -125,12 +125,12 @@ void BoxApp::OnResize()
 void BoxApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
-	float x = mRadius*sinf(mPhi)*cosf(mTheta);
-	float z = mRadius*sinf(mPhi)*sinf(mTheta);
-	float y = mRadius*cosf(mPhi);
+	// float x = mRadius*sinf(mPhi)*cosf(mTheta);
+	// float z = mRadius*sinf(mPhi)*sinf(mTheta);
+	// float y = mRadius*cosf(mPhi);
 
 	// Build the view matrix.
-	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
+	XMVECTOR pos    = XMVectorSet(0.0f, 0.0f, -6.0f, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
