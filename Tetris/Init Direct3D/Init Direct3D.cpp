@@ -114,17 +114,10 @@ bool BoxApp::Init()
                                 XMFLOAT3(+0.5f, +0.5f, -1.0f),
                                 XMFLOAT3(+0.5f, -0.0f, -1.0f)));
 
-    blocks.push_back(new Block(md3dDevice, md3dImmediateContext,
-                                XMFLOAT3(+1.0f, +1.0f, -1.0f),
-                                XMFLOAT3(+1.0f, +1.5f, -1.0f),
-                                XMFLOAT3(+1.5f, +1.5f, -1.0f),
-                                XMFLOAT3(+1.5f, +1.0f, -1.0f)));
-
-    blocks.push_back(new Block(md3dDevice, md3dImmediateContext,
-                                XMFLOAT3(-1.0f, -1.0f, -1.0f),
-                                XMFLOAT3(-1.0f, -0.5f, -1.0f),
-                                XMFLOAT3(-0.5f, -0.5f, -1.0f),
-                                XMFLOAT3(-0.5f, -1.0f, -1.0f)));
+    blocks[0]->AddInstance(D3DXVECTOR3(-1.5f, -1.5f, 5.0f));
+	blocks[0]->AddInstance(D3DXVECTOR3(-1.5f,  1.5f, 5.0f));
+	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f, -1.5f, 5.0f));
+	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f,  1.5f, 5.0f));
 
 	return true;
 }
@@ -141,12 +134,12 @@ void BoxApp::OnResize()
 void BoxApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
-	// float x = mRadius*sinf(mPhi)*cosf(mTheta);
-	// float z = mRadius*sinf(mPhi)*sinf(mTheta);
-	// float y = mRadius*cosf(mPhi);
+	float x = mRadius*sinf(mPhi)*cosf(mTheta);
+	 float z = mRadius*sinf(mPhi)*sinf(mTheta);
+	 float y = mRadius*cosf(mPhi);
 
 	// Build the view matrix.
-	XMVECTOR pos    = XMVectorSet(0.0f, 0.0f, -6.0f, 1.0f);
+	XMVECTOR pos    =  XMVectorSet(0.0f, 0.0f, -6.0f, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -183,7 +176,8 @@ void BoxApp::DrawScene()
         mTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
         
 		// 36 indices for the box.
-		md3dImmediateContext->DrawIndexed(6 * blocks.size(), 0, 0);
+		md3dImmediateContext->DrawInstanced(6, blocks[0]->InstanceCount(), 0, 0);
+
     }
 
 	HR(mSwapChain->Present(0, 0));
@@ -282,7 +276,8 @@ void BoxApp::BuildVertexLayout()
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 	};
 
 
@@ -290,7 +285,7 @@ void BoxApp::BuildVertexLayout()
 	// Create the input layout
     D3DX11_PASS_DESC passDesc;
     mTech->GetPassByIndex(0)->GetDesc(&passDesc);
-	HR(md3dDevice->CreateInputLayout(vertexDesc, 2, passDesc.pIAInputSignature, 
+	HR(md3dDevice->CreateInputLayout(vertexDesc, 3, passDesc.pIAInputSignature, 
 		passDesc.IAInputSignatureSize, &mInputLayout));
 }
  
