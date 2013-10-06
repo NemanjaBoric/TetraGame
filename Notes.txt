@@ -2,7 +2,7 @@ New Project setup:
 ==================
 
 Do not modify the relative directory structure of these samples.  In particular, for each 
-project sample, the Common folder must be obtained from it via "../../Common".
+project sample, the Common folder must be obtained from it via "../../../Common".
 
 Debug libraries:
 ----------------
