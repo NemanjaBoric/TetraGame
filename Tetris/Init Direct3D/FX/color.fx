@@ -14,6 +14,7 @@ struct VertexIn
 	float3 position  : POSITION;
     float4 Color : COLOR;
     float3 instancePosition : TEXCOORD1;
+    float3 rotateAmount: TEXCOORD2;
 
 };
 
@@ -23,16 +24,65 @@ struct VertexOut
     float4 Color : COLOR;
 };
 
+float4x4 RotationMatrix(float rotation)  
+{  
+    float c = cos(rotation);  
+    float s = sin(rotation);  
+ 
+    return float4x4(
+        c,    -s,   0.0f, 0.0f,
+        s,    c,    0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f, 
+        0.0f, 0.0f, 0.0f, 1.0f   
+    );  
+} 
+
+float4x4 IdentityMatrix4()
+{
+    return float4x4(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1);
+}
+
+float4x4 NulMatrix()
+{
+    return float4x4(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1);
+}
+
+float4x4 TranslationMatrix()
+{
+    return float4x4(
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0);
+}
+
+
 VertexOut VS(VertexIn input)
 {
 	VertexOut vout;
 
-    input.position.x += input.instancePosition.x;
-    input.position.y += input.instancePosition.y;
-    input.position.z += input.instancePosition.z;
+   float4x4 translateMatrix = input.rotateAmount.x != 0 ? TranslationMatrix() : NulMatrix();
+   float4x4 tmp =  input.rotateAmount.x != 0 ? RotationMatrix(input.rotateAmount.x) :  IdentityMatrix4();
+  
+   vout.PosH = mul(tmp, float4(input.position, 1.0f));
 
-    vout.PosH = mul(float4(input.position, 1.0f), gWorldViewProj);
 
+   
+    vout.PosH.x += input.instancePosition.x;
+    vout.PosH.y += input.instancePosition.y;
+    vout.PosH.z += input.instancePosition.z;
+    
+
+   vout.PosH = mul(vout.PosH, gWorldViewProj);
+   
 	// Just pass vertex color into the pixel shader.
     vout.Color = input.Color;
     

@@ -9,6 +9,7 @@
 struct InstanceType
 	{
 		D3DXVECTOR3 position;
+        D3DXVECTOR3 rotation;
 	};
 
 class Block

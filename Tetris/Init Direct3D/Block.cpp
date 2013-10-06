@@ -22,6 +22,7 @@ void Block::AddInstance(D3DXVECTOR3 pos)
 {
     InstanceType ins;
     ins.position = pos;
+    ins.rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
     instances.push_back(ins);
 
     ApplyTransform();

@@ -109,10 +109,10 @@ bool BoxApp::Init()
 	BuildVertexLayout();
  
     blocks.push_back(new Block(md3dDevice, md3dImmediateContext,
-                                XMFLOAT3(-0.0f, -0.0f, -1.0f),
-                                XMFLOAT3(-0.0f, +0.5f, -1.0f),
+                                XMFLOAT3(-0.5f, -0.5f, -1.0f),
+                                XMFLOAT3(-0.5f, +0.5f, -1.0f),
                                 XMFLOAT3(+0.5f, +0.5f, -1.0f),
-                                XMFLOAT3(+0.5f, -0.0f, -1.0f)));
+                                XMFLOAT3(+0.5f, -0.5f, -1.0f)));
 
     blocks[0]->AddInstance(D3DXVECTOR3(-1.5f, -1.5f, 5.0f));
 	blocks[0]->AddInstance(D3DXVECTOR3(-1.5f,  1.5f, 5.0f));
@@ -152,19 +152,19 @@ void BoxApp::UpdateScene(float dt)
     
     // Move the block
     float var = blocks[0]->GetInstance(0)->position.x;
-    if(blocks[0]->GetInstance(0)->position.x > 1.0f)
+    if(blocks[0]->GetInstance(1)->position.x > 1.0f)
     {
-        blocks[0]->GetInstance(0)->position.x = 0.98f;
+        blocks[0]->GetInstance(1)->position.x = 0.98f;
         deltax = -0.001f;
     }
-    else if(blocks[0]->GetInstance(0)->position.x < -1.0f)
+    else if(blocks[0]->GetInstance(1)->position.x < -1.0f)
     {
-        blocks[0]->GetInstance(0)->position.x = -0.98f;
+        blocks[0]->GetInstance(1)->position.x = -0.98f;
         deltax = 0.001f;
     }
 
-    blocks[0]->GetInstance(0)->position.x += deltax;
-
+    blocks[0]->GetInstance(1)->position.x += deltax;
+    blocks[0]->GetInstance(0)->rotation.x += 0.001;
     blocks[0]->ApplyTransform();
 
 
@@ -299,8 +299,9 @@ void BoxApp::BuildVertexLayout()
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 1, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"TEXCOORD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 	};
 
 
@@ -308,7 +309,7 @@ void BoxApp::BuildVertexLayout()
 	// Create the input layout
     D3DX11_PASS_DESC passDesc;
     mTech->GetPassByIndex(0)->GetDesc(&passDesc);
-	HR(md3dDevice->CreateInputLayout(vertexDesc, 3, passDesc.pIAInputSignature, 
+	HR(md3dDevice->CreateInputLayout(vertexDesc, 4, passDesc.pIAInputSignature, 
 		passDesc.IAInputSignatureSize, &mInputLayout));
 }
  
