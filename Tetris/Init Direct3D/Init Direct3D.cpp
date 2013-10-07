@@ -136,7 +136,7 @@ void BoxApp::OnResize()
 
 void BoxApp::UpdateScene(float dt)
 {
-    static float deltax = 0.001;
+    static float deltax = 0.001f;
 
 
 	// Convert Spherical to Cartesian coordinates.
@@ -167,7 +167,11 @@ void BoxApp::UpdateScene(float dt)
     }
 
     blocks[0]->GetInstance(1)->position.x += deltax;
-    blocks[0]->GetInstance(0)->rotation.x += 0.001;
+    blocks[0]->GetInstance(0)->rotation.x += 0.001f;
+
+    lines[0]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
+
+
     blocks[0]->ApplyTransform();
 
 
@@ -303,8 +307,9 @@ void BoxApp::BuildVertexLayout()
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"TEXCOORD", 1, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-        {"TEXCOORD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+        {"POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"POSITION", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"POSITION", 3, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 	};
 
 
@@ -312,7 +317,7 @@ void BoxApp::BuildVertexLayout()
 	// Create the input layout
     D3DX11_PASS_DESC passDesc;
     mTech->GetPassByIndex(0)->GetDesc(&passDesc);
-	HR(md3dDevice->CreateInputLayout(vertexDesc, 4, passDesc.pIAInputSignature, 
+	HR(md3dDevice->CreateInputLayout(vertexDesc, 5, passDesc.pIAInputSignature, 
 		passDesc.IAInputSignatureSize, &mInputLayout));
 }
  

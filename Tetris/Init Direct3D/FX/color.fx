@@ -13,8 +13,9 @@ struct VertexIn
 {
 	float3 position  : POSITION;
     float4 Color : COLOR;
-    float3 instancePosition : TEXCOORD1;
-    float3 rotateAmount: TEXCOORD2;
+    float3 instancePosition : POSITION1;
+    float3 objectPosition: POSITION2;
+    float3 rotateAmount: POSITION3;
 
 };
 
@@ -73,14 +74,15 @@ VertexOut VS(VertexIn input)
    float4x4 tmp =  input.rotateAmount.x != 0 ? RotationMatrix(input.rotateAmount.x) :  IdentityMatrix4();
   
    vout.PosH = mul(tmp, float4(input.position, 1.0f));
+      
+   vout.PosH.x += input.instancePosition.x;
+   vout.PosH.y += input.instancePosition.y;
+   vout.PosH.z += input.instancePosition.z;
 
-
+   vout.PosH.x += input.objectPosition.x;
+   vout.PosH.y += input.objectPosition.y;
+   vout.PosH.z += input.objectPosition.z;
    
-    vout.PosH.x += input.instancePosition.x;
-    vout.PosH.y += input.instancePosition.y;
-    vout.PosH.z += input.instancePosition.z;
-    
-
    vout.PosH = mul(vout.PosH, gWorldViewProj);
    
 	// Just pass vertex color into the pixel shader.

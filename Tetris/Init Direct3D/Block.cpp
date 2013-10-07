@@ -7,7 +7,7 @@
 #include <d3dUtil.h>
 #include <D3DX10math.h>
 
-std::vector<InstanceType> Block::instances;
+std::deque<InstanceType> Block::instances;
 ID3D11Buffer* Block::m_instanceBuffer = 0;
 ID3D11Buffer* Block::mBoxVB = 0;
 ID3D11Buffer* Block::mBoxIB = 0;
@@ -18,14 +18,15 @@ int verticesNum = 0;
 Vertex Block::vertexBuffer[4 * MAX_BLOCKS];
 UINT Block::indexBuffer[6 * MAX_BLOCKS];
 
-void Block::AddInstance(D3DXVECTOR3 pos)
+InstanceType* Block::AddInstance(D3DXVECTOR3 pos)
 {
     InstanceType ins;
     ins.position = pos;
-    ins.rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    ins.rotation = ins.object_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
     instances.push_back(ins);
 
     ApplyTransform();
+    return &(instances.back());
 }
 
 
@@ -60,7 +61,7 @@ void Block::ApplyTransform()
 {
    InstanceType* tmp = new InstanceType[instances.size()];
 
-    std::vector<InstanceType>::iterator i;
+    std::deque<InstanceType>::iterator i;
     int j;
 
     for(i = instances.begin(), j = 0; i != instances.end(); i++, j++)
