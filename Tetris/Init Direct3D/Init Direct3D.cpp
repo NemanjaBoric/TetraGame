@@ -16,7 +16,7 @@
 #include "Helper.h"
 #include <vector>
 #include "Block.h"
-
+#include "Line.h"
 
 class BoxApp : public D3DApp
 {
@@ -56,6 +56,7 @@ private:
 	POINT mLastMousePos;
 
     std::vector<Block*> blocks;
+    std::vector<Line*> lines;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -118,6 +119,8 @@ bool BoxApp::Init()
 	blocks[0]->AddInstance(D3DXVECTOR3(-1.5f,  1.5f, 5.0f));
 	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f, -1.5f, 5.0f));
 	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f,  1.5f, 5.0f));
+
+    lines.push_back(new Line(blocks[0]));
 
 	return true;
 }
