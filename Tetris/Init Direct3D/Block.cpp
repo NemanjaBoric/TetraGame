@@ -7,17 +7,6 @@
 #include <d3dUtil.h>
 #include <D3DX10math.h>
 
-std::deque<InstanceType> Block::instances;
-ID3D11Buffer* Block::m_instanceBuffer = 0;
-ID3D11Buffer* Block::mBoxVB = 0;
-ID3D11Buffer* Block::mBoxIB = 0;
-int Block::m_instanceCount = 0;
-
-int verticesNum = 0;
-
-Vertex Block::vertexBuffer[4 * MAX_BLOCKS];
-UINT Block::indexBuffer[6 * MAX_BLOCKS];
-
 InstanceType* Block::AddInstance(D3DXVECTOR3 pos)
 {
     InstanceType ins;
@@ -35,6 +24,12 @@ Block::Block(ID3D11Device* d3dDevice, ID3D11DeviceContext* cntx, XMFLOAT3 a, XMF
 {
     md3dDevice = d3dDevice;
     mCntx = cntx;
+
+    m_instanceBuffer = 0;
+    mBoxVB = 0;
+    mBoxIB = 0;
+    m_instanceCount = 0;
+    verticesNum = 0;
     
     Vertex tmp[] = {
 		/*{ XMFLOAT3(0.0f, 0.0f, 0.0f), (const float*)&Colors::White   },
@@ -109,9 +104,6 @@ void Block::CreateBuffers(Vertex *vertices)
 
 
 	// Create the index buffer
-
-	
-    D3D11_SUBRESOURCE_DATA vertexData, instanceData;
 
     D3D11_BUFFER_DESC instanceBufferDesc;
 
