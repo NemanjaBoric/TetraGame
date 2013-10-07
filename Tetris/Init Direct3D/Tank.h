@@ -4,7 +4,7 @@ class Tank :
     public Figure
 {
 public:
-    Tank(void);
+    Tank(Block* blck);
     ~Tank(void);
 };
 

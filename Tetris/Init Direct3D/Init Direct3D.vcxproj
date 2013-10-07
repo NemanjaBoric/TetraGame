@@ -89,6 +89,7 @@
     <ClCompile Include="Figure.cpp" />
     <ClCompile Include="Init Direct3D.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\d3dApp.h" />
@@ -98,6 +99,7 @@
     <ClInclude Include="Figure.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="Tank.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

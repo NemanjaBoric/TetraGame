@@ -17,6 +17,9 @@
 #include <vector>
 #include "Block.h"
 #include "Line.h"
+#include "Figure.h"
+#include "Tank.h"
+
 
 class BoxApp : public D3DApp
 {
@@ -56,7 +59,7 @@ private:
 	POINT mLastMousePos;
 
     std::vector<Block*> blocks;
-    std::vector<Line*> lines;
+    std::vector<Figure*> figures;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -120,7 +123,10 @@ bool BoxApp::Init()
 	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f, -1.5f, 5.0f));
 	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f,  1.5f, 5.0f));
 
-    lines.push_back(new Line(blocks[0]));
+    figures.push_back(new Line(blocks[0]));
+    figures.push_back(new Tank(blocks[0]));
+
+    figures[1]->move(D3DXVECTOR3(4.0f, 0.0f, 0.0f));
 
 	return true;
 }
@@ -169,8 +175,8 @@ void BoxApp::UpdateScene(float dt)
     blocks[0]->GetInstance(1)->position.x += deltax;
     blocks[0]->GetInstance(0)->rotation.x += 0.001f;
 
-    lines[0]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
-
+    figures[0]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
+    figures[1]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
    
     blocks[0]->ApplyTransform();
 
@@ -219,12 +225,17 @@ void BoxApp::OnMouseDown(WPARAM btnState, int x, int y)
 	mLastMousePos.y = y;
 
 	SetCapture(mhMainWnd);
+
+     if(btnState & MK_LBUTTON)
+        figures[0]->rotate(90);
+    else if(btnState & MK_RBUTTON)
+        figures[1]->rotate(90);
+
 }
 
 void BoxApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
-    lines[0]->rotate(90);
-
+   
 
 	ReleaseCapture();
 }
