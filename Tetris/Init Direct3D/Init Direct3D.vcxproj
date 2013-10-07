@@ -88,7 +88,10 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Figure.cpp" />
     <ClCompile Include="Init Direct3D.cpp" />
+    <ClCompile Include="LeftBlock.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="RightBlock.cpp" />
+    <ClCompile Include="Square.cpp" />
     <ClCompile Include="Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -98,7 +101,10 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Figure.h" />
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="LeftBlock.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="RightBlock.h" />
+    <ClInclude Include="Square.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

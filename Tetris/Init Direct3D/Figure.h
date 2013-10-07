@@ -14,5 +14,6 @@ public:
 
     void move(D3DXVECTOR3 move_vec);
     void rotate(float angle_x);
+    D3DXVECTOR3& GetPosition();
 };
 

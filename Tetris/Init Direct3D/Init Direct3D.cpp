@@ -19,7 +19,9 @@
 #include "Line.h"
 #include "Figure.h"
 #include "Tank.h"
-
+#include "RightBlock.h"
+#include "LeftBlock.h"
+#include "Square.h"
 
 class BoxApp : public D3DApp
 {
@@ -117,17 +119,23 @@ bool BoxApp::Init()
                                 XMFLOAT3(-0.5f, +0.5f, -1.0f),
                                 XMFLOAT3(+0.5f, +0.5f, -1.0f),
                                 XMFLOAT3(+0.5f, -0.5f, -1.0f)));
-
+    /*
     blocks[0]->AddInstance(D3DXVECTOR3(-1.5f, -1.5f, 5.0f));
 	blocks[0]->AddInstance(D3DXVECTOR3(-1.5f,  1.5f, 5.0f));
 	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f, -1.5f, 5.0f));
 	blocks[0]->AddInstance(D3DXVECTOR3( 1.5f,  1.5f, 5.0f));
+    */
 
     figures.push_back(new Line(blocks[0]));
     figures.push_back(new Tank(blocks[0]));
+    figures.push_back(new RightBlock(blocks[0]));
+    figures.push_back(new LeftBlock(blocks[0]));
+    figures.push_back(new Square(blocks[0]));
 
     figures[1]->move(D3DXVECTOR3(4.0f, 0.0f, 0.0f));
-
+    figures[2]->move(D3DXVECTOR3(-4.0f, 0.0f, 0.0f));
+    figures[3]->move(D3DXVECTOR3(0.0f, -3.0f, 0.0f));
+    figures[4]->move(D3DXVECTOR3(+2.0f, -2.0f, 0.0f));
 	return true;
 }
 
@@ -160,24 +168,25 @@ void BoxApp::UpdateScene(float dt)
 
     
     // Move the block
-    float var = blocks[0]->GetInstance(0)->position.x;
-    if(blocks[0]->GetInstance(1)->position.x > 1.0f)
+    float var = figures[0]->GetPosition().y;
+    if(figures[0]->GetPosition().y > 1.0f)
     {
-        blocks[0]->GetInstance(1)->position.x = 0.98f;
-        deltax = -0.001f;
+       figures[0]->GetPosition().y = 0.98f;
+       deltax = -0.001f;
     }
-    else if(blocks[0]->GetInstance(1)->position.x < -1.0f)
+    else if(figures[0]->GetPosition().y < -1.0f)
     {
-        blocks[0]->GetInstance(1)->position.x = -0.98f;
+        figures[0]->GetPosition().y = -0.98f;
         deltax = 0.001f;
     }
 
-    blocks[0]->GetInstance(1)->position.x += deltax;
-    blocks[0]->GetInstance(0)->rotation.x += 0.001f;
+
 
     figures[0]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
     figures[1]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
-   
+    figures[2]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
+    figures[3]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
+
     blocks[0]->ApplyTransform();
 
 
@@ -228,8 +237,12 @@ void BoxApp::OnMouseDown(WPARAM btnState, int x, int y)
 
      if(btnState & MK_LBUTTON)
         figures[0]->rotate(90);
-    else if(btnState & MK_RBUTTON)
+    if(btnState & MK_RBUTTON )
         figures[1]->rotate(90);
+    if(btnState & MK_LBUTTON)
+        figures[2]->rotate(90);
+    if(btnState & MK_RBUTTON )
+        figures[3]->rotate(90);
 
 }
 

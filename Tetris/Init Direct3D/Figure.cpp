@@ -28,3 +28,8 @@ void Figure::rotate(float angle_x_deg)
         t->rotation.x += angle_x_deg * PI / 180.0;
     }
 }
+
+D3DXVECTOR3& Figure::GetPosition()
+{
+    return elements[0]->object_position;
+}
