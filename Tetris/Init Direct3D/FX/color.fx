@@ -73,16 +73,18 @@ VertexOut VS(VertexIn input)
    float4x4 translateMatrix = input.rotateAmount.x != 0 ? TranslationMatrix() : NulMatrix();
    float4x4 tmp =  input.rotateAmount.x != 0 ? RotationMatrix(input.rotateAmount.x) :  IdentityMatrix4();
   
-   vout.PosH = mul(tmp, float4(input.position, 1.0f));
-      
-   vout.PosH.x += input.instancePosition.x;
-   vout.PosH.y += input.instancePosition.y;
-   vout.PosH.z += input.instancePosition.z;
+   vout.PosH.x = input.position.x + input.instancePosition.x;
+   vout.PosH.y = input.position.y + input.instancePosition.y;
+   vout.PosH.z = input.position.z + input.instancePosition.z;
+   vout.PosH.w = 1.0;
 
+   vout.PosH = mul(tmp, vout.PosH);
+      
    vout.PosH.x += input.objectPosition.x;
    vout.PosH.y += input.objectPosition.y;
    vout.PosH.z += input.objectPosition.z;
    
+
    vout.PosH = mul(vout.PosH, gWorldViewProj);
    
 	// Just pass vertex color into the pixel shader.

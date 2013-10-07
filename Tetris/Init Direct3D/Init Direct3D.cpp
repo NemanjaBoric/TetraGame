@@ -137,7 +137,7 @@ void BoxApp::OnResize()
 void BoxApp::UpdateScene(float dt)
 {
     static float deltax = 0.001f;
-
+    static float deltar = 45.0f;
 
 	// Convert Spherical to Cartesian coordinates.
 	float x = mRadius*sinf(mPhi)*cosf(mTheta);
@@ -171,7 +171,7 @@ void BoxApp::UpdateScene(float dt)
 
     lines[0]->move(D3DXVECTOR3(0.00f, deltax, 0.0f));
 
-
+   
     blocks[0]->ApplyTransform();
 
 
@@ -223,6 +223,9 @@ void BoxApp::OnMouseDown(WPARAM btnState, int x, int y)
 
 void BoxApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
+    lines[0]->rotate(90);
+
+
 	ReleaseCapture();
 }
 
